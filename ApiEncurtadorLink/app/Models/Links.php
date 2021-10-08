@@ -6,13 +6,16 @@ use Illuminate\Database\Eloquent\Model;
 
 class Links extends Model
 {
-       /**
-     * The attributes that are mass assignable.
-     *
-     * @var array
-     */
     protected $fillable = [
         'Identificacao', 'Link', 
     ];
+
+    public function regras()
+    {
+        return [
+            'Identificacao' => 'required|unique:links',
+            'Link' => 'required'
+        ];
+    }
 
 }
