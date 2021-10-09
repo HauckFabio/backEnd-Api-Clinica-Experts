@@ -7,14 +7,14 @@ use Illuminate\Database\Eloquent\Model;
 class Links extends Model
 {
     protected $fillable = [
-        'Identificacao', 'Link', 
+        'Identificacao', 'LinkEncurtado', 'LinkOriginal', 'NumeroDeAcessos', 
     ];
 
     public function regras()
     {
         return [
             'Identificacao' => 'required|unique:links',
-            'Link' => 'required'
+            'Link' => 'required',
         ];
     }
 

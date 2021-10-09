@@ -4,7 +4,7 @@ use Illuminate\Support\Facades\Schema;
 use Illuminate\Database\Schema\Blueprint;
 use Illuminate\Database\Migrations\Migration;
 
-class CreateLinksTable extends Migration
+class CreateControlesTable extends Migration
 {
     /**
      * Run the migrations.
@@ -13,16 +13,15 @@ class CreateLinksTable extends Migration
      */
     public function up()
     {
-        Schema::create('links', function (Blueprint $table) {
+        Schema::create('controles', function (Blueprint $table) {
             $table->increments('Id')->unique();
-            $table->string('Identificacao')->unique();
-            $table->string('LinkEncurtado');
-            $table->string('LinkOriginal');
+            $table->string('Ip');
+            $table->string('UserAgent');
+            $table->integer('NumeroDeAcessos');
             $table->timestamp('updated_at');
             $table->timestamp('created_at');
         });
     }
-
     /**
      * Reverse the migrations.
      *
@@ -30,6 +29,6 @@ class CreateLinksTable extends Migration
      */
     public function down()
     {
-        Schema::dropIfExists('links');
+        Schema::dropIfExists('controles');
     }
 }
