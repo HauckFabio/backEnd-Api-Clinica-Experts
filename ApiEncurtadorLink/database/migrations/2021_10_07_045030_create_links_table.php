@@ -18,6 +18,7 @@ class CreateLinksTable extends Migration
             $table->string('Identificacao')->unique();
             $table->string('LinkEncurtado');
             $table->string('LinkOriginal');
+            $table->integer('NumeroDeAcessos');
             $table->timestamp('updated_at');
             $table->timestamp('created_at');
         });

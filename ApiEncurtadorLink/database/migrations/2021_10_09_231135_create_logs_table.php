@@ -4,7 +4,7 @@ use Illuminate\Support\Facades\Schema;
 use Illuminate\Database\Schema\Blueprint;
 use Illuminate\Database\Migrations\Migration;
 
-class CreateControlesTable extends Migration
+class CreateLogsTable extends Migration
 {
     /**
      * Run the migrations.
@@ -13,15 +13,16 @@ class CreateControlesTable extends Migration
      */
     public function up()
     {
-        Schema::create('controles', function (Blueprint $table) {
-            $table->increments('Id')->unique();
+        Schema::create('logs', function (Blueprint $table) {
+            $table->increments('id');
             $table->string('Ip');
             $table->string('UserAgent');
             $table->integer('NumeroDeAcessos');
-            $table->timestamp('updated_at');
-            $table->timestamp('created_at');
+            $table->string('Identificacao');
+            $table->timestamps();
         });
     }
+
     /**
      * Reverse the migrations.
      *
@@ -29,6 +30,6 @@ class CreateControlesTable extends Migration
      */
     public function down()
     {
-        Schema::dropIfExists('controles');
+        Schema::dropIfExists('logs');
     }
 }

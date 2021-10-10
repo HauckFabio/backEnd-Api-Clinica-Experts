@@ -21,6 +21,7 @@ class MasterApiController extends BaseController
 
     public function store(Request $request)
     {
+
         if(empty($request->Identificacao) || empty($request->Link))
         {
             $response = array();
@@ -38,19 +39,26 @@ class MasterApiController extends BaseController
             return response()->json($response, 401);
         }
         else{
-        $this->validate($request, $this->model->regras());
-        $data = $request->all();
-        $data['LinkOriginal'] = $request->Link;
-        $data['LinkEncurtado'] = $this->encurtaLink($request->Link);
-        $data['NumeroDeAcessos'] = 0;
-        if($data['Link'] == false)
-        {
-            return $response = ['Status' => 'Erro','Mensagem' => 'Url invalida!'];      
-        }
-        $data = $this->model->create($data);
-        $response = array();
-        $response = ['Status' => 'Sucesso','Resultado' => "Informações salvas!"];
-        return response()->json($response, 200);
+            $data = $request->all();
+            $data['LinkOriginal'] = $request->Link;
+            $data['LinkEncurtado'] = $this->encurtaLink($request->Link);
+            $resultado = DB::select('select * from links where Identificacao = ? or LinkOriginal = ?', [$data['Identificacao'],$data['LinkOriginal']]);
+            $cont = count($resultado);
+            if($cont > 0)
+            {
+                return $response = ['Status' => 'Erro','Mensagem' => 'Link ou Identificacao já cadastrada!'];       
+            }
+            $this->validate($request, $this->model->regras());
+            $data['NumeroDeAcessos'] = 0;
+            if($data['Link'] == false)
+            {
+                return $response = ['Status' => 'Erro','Mensagem' => 'Url invalida!'];      
+            }
+                $this->model->create($data);
+                $response = array();
+                $response = ['Status' => 'Sucesso','Resultado' => "Informações salvas!"];
+                return response()->json($response, 200);
+                    
         }
     }
 
@@ -64,10 +72,22 @@ class MasterApiController extends BaseController
         }
         else{
 
-            $user = $_SERVER['HTTP_USER_AGENT'];
-            $ip = $request->ip();
-
-            DB::update('update links set Controles = ? where Id = ?', [$user, $ip, $id]);
+            $log['UserAgent'] = $_SERVER['HTTP_USER_AGENT'];
+            $log['Ip'] = $request->ip();
+            $resultado = DB::select('select * from logs where Identificacao = ?', [$data['Identificacao']]);
+            $log['Identificacao'] = $data['Identificacao'];
+            $cont = count($resultado);
+           
+            if($resultado == 0)
+            {
+                $log['NumeroDeAcessos'] = 1;
+            }
+            else
+            {
+                $log['NumeroDeAcessos'] = $cont +1;
+            }
+            DB::update('update links set NumeroDeAcessos = ? where Id = ?', [$log['NumeroDeAcessos'], $id]);
+            $resultado = $this->log->create($log);
             $response = array();
             $response = ['Status' => 'Sucesso','Resultado' => $data];
             return response()->json($response, 200);
@@ -76,7 +96,13 @@ class MasterApiController extends BaseController
 
     public function update(Request $request, $id)
     {
-       
+        if(empty($request->Identificacao))
+        {
+            $response = array();
+            $response = ['Status' => 'Erro','Mensagem' => 'Paramento não foi passado ou invalido!'];
+            return response()->json($response, 404);
+        }
+
         if(!$this->model->find($id))
         {
             $response = array();
@@ -85,8 +111,8 @@ class MasterApiController extends BaseController
         }
         else{
             
-            $link = $request->Link;
-            DB::update('update links set Link = ? where Id = ?', [$link, $id]);
+            $identificacao = $request->Identificacao;
+            DB::update('update links set Identificacao = ? where Id = ?', [$identificacao, $id]);
             $response = array();
             $response = ['Status' => 'Sucesso','Resultado' => 'Update realizado!'];
             return response()->json($response, 200);
