@@ -1,4 +1,5 @@
 <?php
+//https://is.gd/YOxu9H Documentacao
 
 namespace App\Http\Controllers;
 
